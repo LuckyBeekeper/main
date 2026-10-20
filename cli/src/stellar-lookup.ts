@@ -1,4 +1,4 @@
-import { BASE_FEE, Contract, Networks, StrKey, TransactionBuilder, rpc, scValToNative, nativeToScVal } from '@stellar/stellar-sdk'
+import { Account, BASE_FEE, Contract, Networks, StrKey, TransactionBuilder, rpc, scValToNative, nativeToScVal } from '@stellar/stellar-sdk'
 import { asHex32, bytesToHex, hexToBytes } from './hashing.js'
 
 /**
@@ -178,15 +178,10 @@ export async function lookupByVideoHash(
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET
   const source = options.sourceAddress
 
-  if (!source) {
-    throw new Error(
-      'A source address is required for simulation. ' +
-        'Pass --source-address or set HARPOCRATES_SOURCE_ADDRESS env var.',
-    )
-  }
-
   const server = new rpc.Server(rpcUrl)
-  const account = await server.getAccount(source)
+  const account = source
+    ? await server.getAccount(source)
+    : new Account(DEFAULT_SIMULATION_SOURCE, '0')
   const contract = new Contract(contractId)
 
   // Encode the 32-byte video hash as scBytes32 expected by Soroban.
@@ -293,15 +288,10 @@ async function simulateRead(
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET
   const source = options.sourceAddress
 
-  if (!source) {
-    throw new Error(
-      'A source address is required for simulation. ' +
-        'Pass --source-address or set HARPOCRATES_SOURCE_ADDRESS env var.',
-    )
-  }
-
   const server = new rpc.Server(rpcUrl)
-  const account = await server.getAccount(source)
+  const account = source
+    ? await server.getAccount(source)
+    : new Account(DEFAULT_SIMULATION_SOURCE, '0')
   const contract = new Contract(contractId)
 
   const transaction = new TransactionBuilder(account, {
@@ -421,15 +411,10 @@ export async function getLineage(
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET
   const source = options.sourceAddress
 
-  if (!source) {
-    throw new Error(
-      'A source address is required for simulation. ' +
-        'Pass --source-address or set HARPOCRATES_SOURCE_ADDRESS env var.',
-    )
-  }
-
   const server = new rpc.Server(rpcUrl)
-  const account = await server.getAccount(source)
+  const account = source
+    ? await server.getAccount(source)
+    : new Account(DEFAULT_SIMULATION_SOURCE, '0')
   const contract = new Contract(contractId)
 
   const outputDigestScVal = nativeToScVal(hexToBytes(asHex32(outputDigest, 'outputDigest')))
@@ -490,15 +475,10 @@ export async function getProofStatus(
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET
   const source = options.sourceAddress
 
-  if (!source) {
-    throw new Error(
-      'A source address is required for simulation. ' +
-        'Pass --source-address or set HARPOCRATES_SOURCE_ADDRESS env var.',
-    )
-  }
-
   const server = new rpc.Server(rpcUrl)
-  const account = await server.getAccount(source)
+  const account = source
+    ? await server.getAccount(source)
+    : new Account(DEFAULT_SIMULATION_SOURCE, '0')
   const contract = new Contract(contractId)
 
   const proofIdScVal = nativeToScVal(hexToBytes(asHex32(proofId, 'proofId')))

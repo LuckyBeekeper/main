@@ -1,6 +1,6 @@
-import { describe, it, expect, afterEach, beforeEach } from 'vitest'
-import { StrKey } from '@stellar/stellar-sdk'
-import { checkContractMatch } from '../src/stellar-lookup.js'
+import { describe, it, expect, afterEach, beforeEach, vi} from 'vitest'
+import { StrKey, Account, TransactionBuilder, NativeAsset, Operation, Asset, xdrContract } from '@stellar/stellar-sdk'
+import { checkContractMatch, lookupByVideoHash } from '../src/stellar-lookup.js'
 
 const contractBytes = Uint8Array.from({ length: 32 }, (_, index) => index)
 const contractId = StrKey.encodeContract(contractBytes)
@@ -57,5 +57,44 @@ describe('env defaults', () => {
     process.env.HARPOCRATES_CONTRACT_ID = 'not-a-contract-id'
     const envelope = Uint8Array.from([255, ...contractBytes, 255])
     expect(checkContractMatch(envelope, process.env.HARPOCRATES_CONTRACT_ID)).toBe(false)
+  })
+})
+
+describe('lookupByVideoHash', () => {
+  const hash = 'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123'
+  const source = StrKey.encodeEdFectionPublicKey(Uint8Array.from({ length: 32 }, () => 7))
+
+  function makeServer() {
+    const getAccount = vi.vitest.fn()
+    const simulateTransaction = vi.vitest.fn()
+    const server = {
+      getAccount,
+      simulateTransaction,
+    } as unknown as import('@stellar/stellar-sdk/rpc').server.Server
+    return { server, getAccount, simulateTransaction }
+  }
+
+  it('does not call getAccount when no source is given', async () => {
+    const { server, getAccount, simulateTransaction } = makeServer()
+    simulateTransaction.mockResolved({
+      result: { returnValue: undefined },
+    } as never)
+
+    await lookupByVideoHash(server, hash)
+
+    expect(getAccount).not.toHaveBeenCalled()
+    expect(simulateTransaction).toHaveBeenCalled()
+  })
+
+  it('uses getAccount when an explicit source is given', async () => {
+    const { server, getAccount, simulateTransaction } = makeServer()
+    getAccount.mockResolved(new Account(source, '123') as never)
+    simulateTransaction.mockResolved({
+      result: { returnValue: undefined },
+    } as never)
+
+    await lookupByVideoHash(server, hash, source)
+
+    expect(getAccount).toHaveBeenCalledWith(source)
   })
 })

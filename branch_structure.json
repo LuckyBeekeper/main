@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "feat/issue-656-feat-cli-simulate-contract-reads-without-a",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "feat/issue-656-feat-cli-simulate-contract-reads-without-a": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "feat/issue-656-feat-cli-simulate-contract-reads-without-a",
+    "origin"
+  ]
+}

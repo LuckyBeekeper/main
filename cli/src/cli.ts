@@ -411,10 +411,6 @@ async function handleVerifyLineage(
     exit(8, 'a valid --contract-id is required for verification')
   }
 
-  if (!sourceAddress) {
-    exit(8, 'a source address is required for simulation. Pass --source-address or set HARPOCRATES_SOURCE_ADDRESS')
-  }
-
   debugLog({
     action: 'verify-lineage',
     outputDigest,
@@ -565,7 +561,7 @@ Status options:
   --contract-id     Contract ID on Stellar (required).
   --proof-id        32-byte hex proof ID to inspect (required).
   --rpc-url         Stellar RPC URL (default: testnet).
-  --source-address  Source address for simulation.
+  --source-address  Optional source address for simulation (defaults to a placeholder).
   --network         Network passphrase (default: testnet).
   --output, -o      Output format: "text" (default) or "json".
 
@@ -573,7 +569,7 @@ Lineage verification options:
   --output-digest  32-byte hex digest of the derivative (required).
   --contract-id    Contract ID on Stellar (required).
   --rpc-url        Stellar RPC URL (default: testnet).
-  --source-address Source address for simulation.
+  --source-address Optional source address for simulation (defaults to a placeholder).
   --network        Network passphrase (default: testnet).
   --output, -o     Output format: "text" (default) or "json".
 
@@ -600,7 +596,7 @@ Verify options:
   --tx-hash         Transaction hash to verify on-chain.
   --network         Network passphrase (default: testnet).
   --rpc-url         Stellar RPC URL (default: testnet).
-  --source-address  Source address for simulation.
+  --source-address  Optional source address for simulation (defaults to a placeholder).
   --output, -o      Output format: "text" (default) or "json".
   --offline         Skip on-chain lookup; validate locally only.
 
@@ -617,7 +613,7 @@ Hash options:
   --file, -f        Path to the file to hash (use "-" for stdin; required).
 
 Environment variables:
-  HARPOCRATES_SOURCE_ADDRESS   Source address for Stellar simulation.
+  HARPOCRATES_SOURCE_ADDRESS   Optional source address for Stellar simulation.
   HARPOCRATES_DEBUG            Equivalent to --debug.
 
 Debugging:

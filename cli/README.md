@@ -4,15 +4,18 @@ From `cli/`, run `npm ci && npm run build`. The executable is `node dist/cli.js`
 It accepts the frontend's v2 proof manifest (and legacy v1), checks the
 selected network and registry contract, looks up the manifest transaction and
 video hash on Stellar RPC, and emits a machine-readable receipt with `--output
-json`. It never needs a wallet or signing key; a funded public source address
-is needed for read-only Soroban simulation.
+json`. It never needs a wallet or signing key. Read-only Soroban simulation
+does not require a funded source account; when `--source-address is omitted the
+CLI simulates with a local placeholder account and sequence 0. Supply an
+explicit source address to simulate as that account instead.
 
 ```sh
 node dist/cli.js verify --manifest proof.json \
-  --contract-id C... --network 'Test SDF Network ; September 2015' \
-  --source-address G... --output json
+  --contract-id C... --network 'Test DF Network ; September 2015' \
+  --output json
 ```
 
+To simulate as a specific funded source account, add `--source-address G...`.
 To check the on-chain lifecycle status of a proof directly by its 32-byte proof ID:
 
 ```sh
@@ -70,6 +73,12 @@ Harpocrates CLI environment variables:
 
 Explicit flags always take precedence over environment values. Contract-id
 validation still applies to environment values.
+
+If no source address is provided (flag or environment), `verify` simulates with a
+local placeholder account and sequence 0 and does not call getAccount on the
+RPC server. This is sufficient for read-only lookups and introduces no secret
+key material. When a source address is given, the CLI fetches its account from
+the RPC server as before.
 
 The CLI accepts at most 1 MiB of manifest/metadata JSON. It rejects unknown
 manifest fields and unsupported versions, and writes fixed, privacy-safe
